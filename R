@@ -16,14 +16,14 @@ citation("lipidr")
 # RStudio version 2022.07.1+554 "Spotted Wakerobin" 
 # Bioconductor version 3.15 (BiocManager 1.30.18), R 4.2.1 (2022-06-23)
 
-                                                      ### 22nd August 2022 ###
+                                                      ### 23rd August 2022 ###
 rm(list = ls())
 # Checking R version
 paste(R.Version()[c("major", "minor")], collapse = ".")
 sessionInfo()
 
 getwd()
-setwd("~/Library/CloudStorage/OneDrive-Personal/OneDrive QMUL LIDo PhD - All 4 Years/Year 4/Quarter 13/Analysis/R Work - Post August 22/Script")
+setwd("/Users/rotimi/Library/CloudStorage/OneDrive-Personal/OneDrive QMUL LIDo PhD - All 4 Years/Year 4/Quarter 13/Analysis/R Work - Post August 22/lipidr_and_LipidSuite")
 getwd()
 
 ### Using lipidr for analysis using 2 files for numerical matrix input
@@ -38,51 +38,21 @@ BiocManager::available()
 
 # Loading lipidr
 library(lipidr)
+library(readr) # imports ta_path file
 installed.packages()
 
 ### lipidr file conversion to LipidomicsExperiment
 dir_path = getwd()
-dir_name = "/lipidr_data"
+dir_name = "/Data"
 dm_path = paste(dir_path,dir_name,"/Reordered_AN_11_In_Log_2_Data_Matrix.csv",
                 sep="")
 ta_path = paste(dir_path,dir_name,"/Reordered_In_Log_2_Data_Clin.csv",
                 sep="")
 
+d <- as_lipidomics_experiment(read.csv(dm_path))
+d <- add_sample_annotation(d,ta_path)
 
-df <- as_lipidomics_experiment(read.csv(dm_path))
-df <- add_sample_annotation(d, ta_path)
+colnames(d) # --> converted - to . for names
+View(d)
 
-d <- as_lipidomics_experiment(read.csv("Reordered_AN_11_In_Log_2_Data_Matrix.csv"))
-d <- add_sample_annotation(d, "Reordered_In_Log_2_Data_Clin")
-
-### Neither set of d <- works ###
-
-
-       ##################### Troubleshooting #######################
-browseVignettes("lipidr") # view documentation for the version of this package installed on system
-
-# checking if package has been attached to the workspace
-require("lipidr")
-
-ls() # what's in workspace
-rm(list = ls(all.names = TRUE)) #will clear all objects includes hidden objects.
-gc() #free up memrory and report the memory usage.
-
-
-       ##################### Troubleshooting #######################
-find.package("BiocManager", lib.loc = NULL, quiet = FALSE,
-             verbose = getOption("verbose"))
-find.package("lipidr", lib.loc = NULL, quiet = FALSE,
-             verbose = getOption("verbose"))
-BiocManager::install("gmm", force=TRUE)
-
-## Installing developer version doesn't work either
-
-install.packages("devtools")
-library(devtools)
-install_github("ahmohamed/lipidr")
-
-# locate libgfortran.3.dylib --> process of me installing gfortran on Mac (https://stackoverflow.com/questions/63511986/error-package-or-namespace-load-failed-for-gmm-in-dyn-loadfile-dllpath-dl)
-.libPaths()
-R.home()
-       ##################### Troubleshooting #######################
+plot_samples(d, type = "tic", log = TRUE)
